@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- build: install the locked dependencies into a virtualenv --------------------------------
-FROM python:3.12-slim AS builder
+FROM python:3.15-slim AS builder
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never \
@@ -13,7 +13,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 # ---- runtime ----------------------------------------------------------------------------------
-FROM python:3.12-slim AS runtime
+FROM python:3.15-slim AS runtime
 RUN useradd --system --uid 10001 --create-home gitwell
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
