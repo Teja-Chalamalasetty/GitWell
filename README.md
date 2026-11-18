@@ -1,5 +1,10 @@
 # GitWell
 
+[![CI](https://github.com/Teja-Chalamalasetty/GitWell/actions/workflows/ci.yml/badge.svg)](https://github.com/Teja-Chalamalasetty/GitWell/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB.svg)
+![React 18](https://img.shields.io/badge/react-18-61DAFB.svg)
+
 GitWell scans GitHub repositories against an engineering-quality checklist and shows how healthy
 they are, and whether they are getting better.
 
