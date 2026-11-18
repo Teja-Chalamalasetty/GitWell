@@ -1,0 +1,54 @@
+# One command starts the whole stack:   docker compose up --build
+# Needs a .env file (copy .env.example). GitWell is a SINGLE-process service: do not scale the
+# backend; there must be exactly one container (see the README).
+name: gitwell
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: gitwell
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (letters and digits only)}
+      POSTGRES_DB: gitwell
+    volumes:
+      - gitwell-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gitwell -d gitwell"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    # No published port: only the backend talks to the database.
+
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      # These override anything in .env.
+      ENV: production
+      DATABASE_URL: postgresql+psycopg://gitwell:${POSTGRES_PASSWORD}@db:5432/gitwell
+      CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    # Time to finish: stop the scheduler, cancel queued scans, abort running ones.
+    stop_grace_period: 20s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8000/api/v1
+    environment:
+      API_ORIGIN: http://localhost:8000
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  gitwell-db:

@@ -1,0 +1,7 @@
+# Normalise line endings so Windows checkouts, Linux CI and Docker builds agree.
+* text=auto eol=lf
+
+# Binary files: never touch.
+*.jpg binary
+*.png binary
+*.ico binary
